@@ -9,6 +9,9 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
+import { AuthenticationComponent } from '@loopback/authentication';
+import { JWTAuthenticationComponent, UserServiceBindings } from '@loopback/authentication-jwt';
+import { MangoDataSource } from './datasources';
 
 export {ApplicationConfig};
 
@@ -16,7 +19,12 @@ export class ServerApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
-    super(options);
+    super();
+    
+    this.component(RestExplorerComponent);
+    this.component(AuthenticationComponent);
+    this.component(JWTAuthenticationComponent);
+    this.dataSource(MangoDataSource,UserServiceBindings.DATASOURCE_NAME);
 
     // Set up the custom sequence
     this.sequence(MySequence);
@@ -27,8 +35,10 @@ export class ServerApplication extends BootMixin(
     // Customize @loopback/rest-explorer configuration here
     this.configure(RestExplorerBindings.COMPONENT).to({
       path: '/explorer',
-    });
-    this.component(RestExplorerComponent);
+    }
+    );
+    
+
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
@@ -39,6 +49,7 @@ export class ServerApplication extends BootMixin(
         extensions: ['.controller.js'],
         nested: true,
       },
+      
     };
   }
 }

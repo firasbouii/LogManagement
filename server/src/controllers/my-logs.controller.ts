@@ -20,7 +20,8 @@ import {
 } from '@loopback/rest';
 import {MyLogs} from '../models';
 import {MyLogsRepository} from '../repositories';
-
+import {authenticate} from '@loopback/authentication';
+@authenticate('jwt')
 export class MyLogsController {
   constructor(
     
